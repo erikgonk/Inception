@@ -1,0 +1,11 @@
+FROM alpine:3.21.4
+
+RUN apk update && apk upgrade && apk add php83 php83-fpm \  
+			&& apk add vim && apk add bash
+
+# RUN chown -R www-data:www-data /var/lib/nginx/html
+# RUN chmod 755 /var/lib/nginx/html
+
+COPY www.conf /etc/php83/php-fpm.d/www.conf
+
+CMD ["php-fpm83", "-F"]
