@@ -1,7 +1,7 @@
 FROM alpine:3.21.4
 
 RUN apk update && apk upgrade && apk add php83 php83-fpm \  
-			&& apk add vim && apk add bash
+			&& apk add vim
 
 # RUN chown -R www-data:www-data /var/lib/nginx/html
 # RUN chmod 755 /var/lib/nginx/html
