@@ -1,18 +1,34 @@
-version: "3.8"
+# services:
+#   nginx:
+#     build: requirements/nginx/.
+#     container_name: nginx
+#     ports:
+#       - "443:443"
+#     volumes:
+#       - $HOME/$USER/data:/var/lib/nginx/html
 
+  # wordpress:
+  #   build: requirements/wordpress/.
+  #   container_name: wordpress
+  #   # ports:
+  #   #   - "9000:9000"
+  #   volumes:
+  #     - $HOME/$USER/data:/var/lib/nginx/html
 services:
   nginx:
-    build: requirements/nginx/.
+    image: img-nginx
     container_name: nginx
+    # depends_on:
+    #   - wordpress
     ports:
-      - "80:80"
-    volumes:
-      - $HOME/$USER/data:/var/lib/nginx/html
-
-  wordpress:
-    build: requirements/wordpress/.
-    container_name: wordpress
-    # ports:
-    #   - "9000:9000"
-    volumes:
-      - $HOME/$USER/data:/var/lib/nginx/html
+      - "443:443"
+    restart: always
+    # env_file:
+    #   - .env
+    # volumes:
+    #   - wordpress_vol:/var/www/html
+    networks:
+      - neterik
+networks:
+    neterik:
+        driver: bridge
