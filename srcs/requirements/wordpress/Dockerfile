@@ -6,6 +6,6 @@ RUN apk update && apk upgrade && apk add php83 php83-fpm \
 # RUN chown -R www-data:www-data /var/lib/nginx/html
 # RUN chmod 755 /var/lib/nginx/html
 
-COPY www.conf /etc/php83/php-fpm.d/www.conf
+COPY conf/www.conf /etc/php83/php-fpm.d/www.conf
 
 CMD ["php-fpm83", "-F"]

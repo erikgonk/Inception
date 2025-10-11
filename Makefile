@@ -27,6 +27,6 @@ fdown: down
 		printf "does not exist, skipping removal\n"; \
 	fi
 
-foo:
+ls:
 	ls $(PATH_NGINX)
 	ls $(PATH_WORDPRESS)
