@@ -1,32 +1,69 @@
-PATH_NGINX = ./srcs/requirements/nginx
-PATH_WORDPRESS = ./srcs/requirements/wordpress
+NAME 	= Inception
 
-EXEC_DOCKER = docker build -t
+DOCKER = docker
+RUN = $(DOCKER) run
+COMPOSE = docker compose
 
-DOCKER_COMPOSE = srcs/docker-compose.yml
-all: fdown image up
+# ╔══════════════════════════════════════════════════════════════════════════╗ #  
+#                               SOURCES                                        #
+# ╚══════════════════════════════════════════════════════════════════════════╝ # 
 
-image:
-	$(EXEC_DOCKER) img-nginx $(PATH_NGINX)
-# 	$(EXEC_DOCKER) img-wordpress $(PATH_WORDPRESS)
+MANDATORY_PATH = -f ./src/mandatory.yml
+BONUS_PATH = -f ./src/bonus.yml # PARA BORRAR
 
-up:
-	docker compose --file $(DOCKER_COMPOSE) up --detach
+# ╔══════════════════════════════════════════════════════════════════════════╗ #  
+#                               COLORS                                         #
+# ╚══════════════════════════════════════════════════════════════════════════╝ #  
 
-down:
-	docker compose --file $(DOCKER_COMPOSE) down
+RED=\033[0;31m
+CYAN=\033[0;36m
+GREEN=\033[0;32m
+YELLOW=\033[0;33m
+WHITE=\033[0;97m
+BLUE=\033[0;34m
+NC=\033[0m # No color
 
-res:
-	docker restart nginx
+# ╔══════════════════════════════════════════════════════════════════════════╗ #  
+#                               RULES                                          #
+# ╚══════════════════════════════════════════════════════════════════════════╝ # 
 
-fdown: down
-	docker compose --file $(DOCKER_COMPOSE) down --volumes
-	@if docker image inspect img-nginx > /dev/null 2>&1; then \
-		docker rmi img-nginx; \
-	else \
-		printf "does not exist, skipping removal\n"; \
+up: setup
+	@$(COMPOSE) $(MANDATORY_PATH) up --build -d
+
+bonus: clean
+	@$(COMPOSE) $(MANDATORY_PATH) $(BONUS_PATH) up --build -d
+
+setup:
+	@if [ ! -f ./src/.env ]; then \
+		cp ~/.env ./src;	\
 	fi
+it: setup
+	@$(DOCKER) exec -it $(ID) sh
 
-ls:
-	ls $(PATH_NGINX)
-	ls $(PATH_WORDPRESS)
+clean: setup images
+	@echo
+	@$(COMPOSE) $(MANDATORY_PATH) down
+	@$(COMPOSE) $(BONUS_PATH) down
+	@printf "$(RED)Removing images above$(NC)\n"
+	@$(DOCKER) container prune -f && $(DOCKER) image prune -a -f
+	@printf "$(GREEN) $@ COMPLETE! $(NC)\n"
+
+fclean: setup clean
+	@echo
+	@echo "Starting full clean"
+	@$(DOCKER) system prune -a
+	@echo
+	@printf "$(GREEN)COMPLETE! $(NC)\n"
+
+logs: setup
+	@$(DOCKER) $@ -f $(ID)
+
+ps: setup
+	@$(DOCKER) $@ -a
+
+images: setup
+	@$(DOCKER) $@
+
+re: fclean up
+
+.PHONY: up bonus setup it clean down logs ps images re
